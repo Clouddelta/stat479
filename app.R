@@ -79,7 +79,7 @@ plotseasons=function(data){
           plot.subtitle = element_text(color='navy',size=8,hjust=0.75,face='bold.italic'),
           axis.title.x = element_text(color="blue", size=14,hjust=0.5, face="bold"),
           axis.title.y = element_text(color="#993333", size=14,hjust=0.5, face="bold"))
-  pl
+  ggplotly(pl)
   }
 reset_selection <- function(x, brush) {
   brushedPoints(x, brush, allRows = TRUE)$selected_
@@ -120,7 +120,7 @@ ui <- navbarPage('Comparison',
                           fluidPage(
                             selectInput('cty2','Country(sorted by cummulated cases)',choices=country,
                                         selected='Canada'),
-                            plotOutput('p2'),
+                            plotlyOutput('p2'),
                             DTOutput("table2")
                           )
                  )
@@ -135,12 +135,11 @@ server <- function(input, output, session) {
   output$test=renderTable(input$dateRange[1])
   output$p1=renderPlot(plotcountries(selectedcovid1()))
   output$table2=renderDT(selectedcovid2())
-  output$p2=renderPlot(plotseasons(selectedcovid2()))
+  output$p2=renderPlotly(plotseasons(selectedcovid2()))
   output$table3=renderDT(selectedcovid1()%>%
                            group_by(Country)%>%
                            summarise(casemean=mean(New_cases),
                                      deathmean=mean(New_deaths))%>%
                            arrange(casemean))
-                        
   }
 shinyApp(ui, server)
